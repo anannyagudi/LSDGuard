@@ -1,0 +1,847 @@
+.outbreak-page {
+  min-height: 100vh;
+  padding: 28px;
+  color: #20342d;
+  background:
+    linear-gradient(rgba(34, 197, 94, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34, 197, 94, 0.05) 1px, transparent 1px),
+    linear-gradient(180deg, #e9f8ee 0%, #f8fcf9 100%);
+  background-size: 58px 58px, 58px 58px, auto;
+  display: flex;
+  align-items: stretch;
+}
+
+.outbreak-phone-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(430px, 0.8fr);
+  align-items: stretch;
+  gap: 22px;
+  width: min(1480px, calc(100% - 32px));
+  min-height: calc(100vh - 56px);
+  margin: 0 auto;
+}
+
+.outbreak-map-card,
+.outbreak-panel {
+  overflow: hidden;
+  border: 1px solid rgba(203, 230, 218, 0.95);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 18px 46px rgba(15, 23, 42, 0.08);
+}
+
+.outbreak-map-card {
+  position: relative;
+  min-height: calc(100vh - 56px);
+  border-radius: 28px;
+}
+
+.outbreak-map-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #dff5e9;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.outbreak-map-frame:active {
+  cursor: grabbing;
+}
+
+.outbreak-map-tiles {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.outbreak-map-tiles img {
+  position: absolute;
+  width: 256px;
+  height: 256px;
+  border: 0;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.78;
+  filter: saturate(0.92) contrast(0.96);
+}
+
+.outbreak-map-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    linear-gradient(rgba(47, 127, 97, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(47, 127, 97, 0.08) 1px, transparent 1px),
+    radial-gradient(circle at 28% 28%, rgba(34, 197, 94, 0.18), transparent 18%),
+    radial-gradient(circle at 76% 66%, rgba(245, 158, 11, 0.14), transparent 20%),
+    #dff5e9;
+  background-size: 46px 46px, 46px 46px, auto, auto, auto;
+}
+
+.outbreak-road,
+.outbreak-field {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+}
+
+.outbreak-road {
+  height: 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.84);
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.18);
+}
+
+.outbreak-road.primary {
+  left: -9%;
+  top: 45%;
+  width: 118%;
+  transform: rotate(-12deg);
+}
+
+.outbreak-road.secondary {
+  left: 18%;
+  top: 8%;
+  width: 18px;
+  height: 96%;
+  transform: rotate(23deg);
+}
+
+.outbreak-road.tertiary {
+  right: -12%;
+  top: 70%;
+  width: 78%;
+  transform: rotate(19deg);
+}
+
+.outbreak-field {
+  border: 1px solid rgba(47, 127, 97, 0.18);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.outbreak-field.field-a {
+  left: 7%;
+  top: 18%;
+  width: 28%;
+  height: 22%;
+}
+
+.outbreak-field.field-b {
+  right: 10%;
+  top: 14%;
+  width: 24%;
+  height: 26%;
+}
+
+.outbreak-field.field-c {
+  left: 42%;
+  bottom: 12%;
+  width: 30%;
+  height: 24%;
+}
+
+.outbreak-map-frame.dark .outbreak-map-tiles img {
+  filter: grayscale(0.65) brightness(0.72) contrast(1.12);
+}
+
+.outbreak-map-frame.satellite .outbreak-map-tiles img {
+  filter: saturate(1.25) contrast(1.02);
+}
+
+.outbreak-back,
+.outbreak-title-pill,
+.outbreak-location-pill {
+  position: absolute;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.14);
+  font-weight: 950;
+}
+
+.outbreak-back {
+  top: 14px;
+  left: 14px;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 12px;
+  color: #ffffff;
+  background: #2f7f61;
+  cursor: pointer;
+}
+
+.outbreak-title-pill {
+  top: 14px;
+  left: 50%;
+  min-height: 36px;
+  padding: 0 14px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  color: #ffffff;
+  background: #20a475;
+  white-space: nowrap;
+}
+
+.outbreak-location-pill {
+  top: 14px;
+  right: 14px;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
+  color: #155e48;
+  background: rgba(255, 255, 255, 0.92);
+  font-size: 12px;
+}
+
+.outbreak-location-pill.approximate {
+  color: #92400e;
+}
+
+.outbreak-radius-ring {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  border: 2px dashed rgba(59, 130, 246, 0.5);
+  border-radius: 999px;
+  background: rgba(59, 130, 246, 0.06);
+}
+
+.outbreak-map-marker {
+  position: absolute;
+  z-index: 4;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  transform: translate(-50%, -50%);
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.outbreak-map-marker::before {
+  position: absolute;
+  inset: 2px;
+  content: "";
+  border-radius: 999px;
+  background: var(--marker-color);
+  opacity: 0.28;
+  animation: outbreakPulse 1.8s ease-out infinite;
+}
+
+.outbreak-marker-dot {
+  position: absolute;
+  left: 7px;
+  top: 7px;
+  width: 14px;
+  height: 14px;
+  border: 3px solid #ffffff;
+  border-radius: 999px;
+  background: var(--marker-color);
+  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.25);
+}
+
+.outbreak-map-marker.current .outbreak-marker-dot {
+  width: 16px;
+  height: 16px;
+  background: #3b82f6;
+}
+
+.outbreak-marker-tooltip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  z-index: 8;
+  width: max-content;
+  max-width: 230px;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, var(--marker-color, #22c55e) 30%, #dbe5ef);
+  border-radius: 12px;
+  color: #20342d;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.16);
+  text-align: left;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, 6px);
+  transition: opacity 140ms ease, transform 140ms ease;
+}
+
+.outbreak-marker-tooltip::after {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 10px;
+  height: 10px;
+  content: "";
+  transform: translate(-50%, -5px) rotate(45deg);
+  border-right: 1px solid color-mix(in srgb, var(--marker-color, #22c55e) 30%, #dbe5ef);
+  border-bottom: 1px solid color-mix(in srgb, var(--marker-color, #22c55e) 30%, #dbe5ef);
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.outbreak-marker-tooltip strong,
+.outbreak-marker-tooltip span,
+.outbreak-marker-tooltip small,
+.outbreak-marker-tooltip em {
+  display: block;
+}
+
+.outbreak-marker-tooltip strong {
+  color: #10251d;
+  font-size: 13px;
+  line-height: 1.2;
+  font-weight: 950;
+}
+
+.outbreak-marker-tooltip span {
+  margin-top: 5px;
+  color: var(--marker-color);
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.outbreak-marker-tooltip small,
+.outbreak-marker-tooltip em {
+  margin-top: 4px;
+  color: #64748b;
+  font-size: 11px;
+  line-height: 1.35;
+  font-style: normal;
+  font-weight: 850;
+}
+
+.outbreak-map-marker:hover,
+.outbreak-map-marker:focus-visible {
+  z-index: 9;
+}
+
+.outbreak-map-marker:hover .outbreak-marker-tooltip,
+.outbreak-map-marker:focus-visible .outbreak-marker-tooltip {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.outbreak-map-zoom {
+  position: absolute;
+  right: 12px;
+  bottom: 38px;
+  z-index: 6;
+  display: grid;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid rgba(203, 213, 225, 0.9);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.14);
+}
+
+.outbreak-map-zoom button {
+  width: 34px;
+  height: 32px;
+  border: 0;
+  color: #155e48;
+  background: #ffffff;
+  font-size: 18px;
+  line-height: 1;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.outbreak-map-zoom button + button {
+  border-top: 1px solid #e2e8f0;
+}
+
+.outbreak-map-zoom button:hover {
+  background: #eef8f2;
+}
+
+.outbreak-panel {
+  position: relative;
+  z-index: 8;
+  margin-top: 0;
+  padding: 22px;
+  border-radius: 28px;
+}
+
+.outbreak-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.outbreak-stat {
+  min-height: 94px;
+  padding: 16px 10px;
+  border-radius: 18px;
+  text-align: center;
+  background: #ffffff;
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.07);
+}
+
+.outbreak-stat strong {
+  display: block;
+  font-size: 30px;
+  line-height: 1;
+  font-weight: 950;
+}
+
+.outbreak-stat span {
+  display: block;
+  margin-top: 7px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.outbreak-stat.green strong {
+  color: #15803d;
+}
+
+.outbreak-stat.red {
+  background: #fee2e2;
+}
+
+.outbreak-stat.red strong {
+  color: #dc2626;
+}
+
+.outbreak-stat.amber {
+  background: #fef3c7;
+}
+
+.outbreak-stat.amber strong {
+  color: #d97706;
+}
+
+.outbreak-stat.blue {
+  background: #dbeafe;
+}
+
+.outbreak-stat.blue strong {
+  color: #1d4ed8;
+}
+
+.outbreak-map-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.outbreak-map-controls span {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.outbreak-map-controls div,
+.outbreak-tabs {
+  display: flex;
+  gap: 7px;
+}
+
+.outbreak-map-controls button,
+.outbreak-tabs button {
+  min-height: 34px;
+  border: 0;
+  border-radius: 999px;
+  color: #475569;
+  background: #eef4f2;
+  font-size: 12px;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.outbreak-map-controls button {
+  padding: 0 12px;
+}
+
+.outbreak-map-controls button.active,
+.outbreak-tabs button.active {
+  color: #ffffff;
+  background: #2f7f61;
+}
+
+.outbreak-tabs {
+  margin-top: 14px;
+}
+
+.outbreak-tabs button {
+  flex: 1;
+  padding: 0 8px;
+}
+
+.outbreak-tab-content {
+  min-height: 420px;
+  max-height: calc(100vh - 380px);
+  margin-top: 12px;
+  overflow: auto;
+}
+
+.outbreak-search {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 14px;
+  color: #64748b;
+  background: #f1f6f4;
+}
+
+.outbreak-search input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  color: #20342d;
+  background: transparent;
+  font: inherit;
+  font-weight: 850;
+}
+
+.outbreak-sort-note {
+  margin: 10px 2px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.outbreak-farmer-list {
+  display: grid;
+  gap: 10px;
+}
+
+.outbreak-farmer-card {
+  position: relative;
+  padding: 14px;
+  border: 1px solid color-mix(in srgb, var(--farmer-color, #22c55e) 28%, #e2e8f0);
+  border-radius: 18px;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--farmer-color, #22c55e) 13%, transparent) 0%, rgba(255, 255, 255, 0.94) 34%),
+    #ffffff;
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--farmer-color, #22c55e) 10%, rgba(15, 23, 42, 0.055));
+}
+
+.outbreak-farmer-card::before {
+  position: absolute;
+  inset: 12px auto 12px 0;
+  width: 4px;
+  content: "";
+  border-radius: 0 999px 999px 0;
+  background: var(--farmer-color, #22c55e);
+}
+
+.outbreak-farmer-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.outbreak-farmer-top > div:first-child {
+  position: relative;
+  min-width: 0;
+  padding-left: 22px;
+}
+
+.outbreak-risk-dot {
+  position: absolute;
+  left: 0;
+  top: 5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.04);
+}
+
+.outbreak-farmer-top strong {
+  display: block;
+  color: #20342d;
+  font-size: 15px;
+  font-weight: 950;
+}
+
+.outbreak-farmer-top p {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.outbreak-farmer-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.outbreak-farmer-meta span {
+  padding: 5px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 950;
+}
+
+.outbreak-farmer-meta small,
+.outbreak-risk-copy {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.outbreak-risk-bar {
+  height: 6px;
+  margin: 11px 0 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #eef2f7;
+}
+
+.outbreak-risk-bar span {
+  display: block;
+  height: 100%;
+  min-width: 2px;
+  border-radius: inherit;
+}
+
+.outbreak-risk-copy {
+  margin: 0;
+}
+
+.outbreak-expand {
+  margin-top: 10px;
+  padding: 6px 11px;
+  border: 1px solid #dbe7e2;
+  border-radius: 999px;
+  color: #2f7f61;
+  background: #f5fbf7;
+  font-size: 12px;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.outbreak-cow-list {
+  display: grid;
+  gap: 7px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #eef2f7;
+}
+
+.outbreak-cow-list div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.outbreak-cow-list small {
+  font-weight: 950;
+}
+
+.outbreak-empty {
+  display: grid;
+  min-height: 190px;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  color: #64748b;
+  text-align: center;
+  font-weight: 850;
+}
+
+.outbreak-empty strong {
+  color: #20342d;
+  font-size: 16px;
+}
+
+.outbreak-empty p {
+  max-width: 34ch;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.outbreak-legend-panel {
+  padding: 4px 0 2px;
+}
+
+.outbreak-legend-head {
+  margin-bottom: 14px;
+  padding: 18px;
+  border: 1px solid rgba(47, 127, 97, 0.16);
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, rgba(47, 127, 97, 0.12), rgba(59, 130, 246, 0.07)),
+    #ffffff;
+}
+
+.outbreak-legend-head h3 {
+  margin: 0;
+  color: #17382d;
+  font-size: 22px;
+  line-height: 1.1;
+  font-weight: 950;
+}
+
+.outbreak-legend-head p {
+  margin: 7px 0 0;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.45;
+  font-weight: 800;
+}
+
+.outbreak-legend-list {
+  display: grid;
+  gap: 12px;
+  padding: 0;
+}
+
+.outbreak-legend-row {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  min-height: 92px;
+  padding: 16px;
+  border: 1px solid color-mix(in srgb, var(--legend-color, #22c55e) 28%, #e2e8f0);
+  border-radius: 18px;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--legend-color, #22c55e) 14%, transparent), rgba(255, 255, 255, 0.95) 44%),
+    #ffffff;
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--legend-color, #22c55e) 10%, rgba(15, 23, 42, 0.055));
+}
+
+.outbreak-legend-row > span {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: var(--legend-color, #22c55e);
+  border: 5px solid #ffffff;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--legend-color, #22c55e) 38%, #dbe5ef),
+    0 10px 18px color-mix(in srgb, var(--legend-color, #22c55e) 24%, transparent);
+}
+
+.outbreak-legend-row strong {
+  color: #20342d;
+  font-size: 17px;
+  line-height: 1.2;
+  font-weight: 950;
+}
+
+.outbreak-legend-row p {
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 800;
+}
+
+.outbreak-tips-card {
+  padding: 18px;
+  border-radius: 18px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #2f7f61 0%, #1f6b54 100%);
+}
+
+.outbreak-tips-card h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.outbreak-tips-card p {
+  margin: 8px 0 12px;
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.5;
+}
+
+.outbreak-tips-card ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 18px;
+  font-weight: 850;
+}
+
+@keyframes outbreakPulse {
+  0% {
+    transform: scale(0.7);
+    opacity: 0.55;
+  }
+
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 1100px) {
+  .outbreak-phone-shell {
+    grid-template-columns: 1fr;
+    width: min(760px, calc(100% - 28px));
+    min-height: auto;
+  }
+
+  .outbreak-map-card {
+    height: min(52vh, 460px);
+    min-height: 360px;
+    border-radius: 28px 28px 16px 16px;
+  }
+
+  .outbreak-panel {
+    margin-top: -18px;
+  }
+
+  .outbreak-tab-content {
+    min-height: 260px;
+    max-height: 44vh;
+  }
+}
+
+@media (max-width: 620px) {
+  .outbreak-page {
+    padding: 0;
+  }
+
+  .outbreak-phone-shell {
+    display: block;
+    width: 100%;
+    min-height: auto;
+  }
+
+  .outbreak-map-card {
+    height: 42vh;
+    border-radius: 0 0 22px 22px;
+  }
+
+  .outbreak-panel {
+    border-radius: 24px 24px 0 0;
+  }
+
+  .outbreak-title-pill {
+    top: 58px;
+  }
+
+  .outbreak-location-pill {
+    top: 58px;
+  }
+
+  .outbreak-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
