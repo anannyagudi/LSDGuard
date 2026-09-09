@@ -14,7 +14,7 @@ import { useLanguage } from "../context/useLanguage";
 
 const API_BASE =
   (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE) ||
-  "http://localhost:5000";
+  "http://https://lsdguard-gx3u.onrender.com";
 
 export default function Signup() {
   const { t } = useLanguage();
@@ -346,7 +346,7 @@ export default function Signup() {
     };
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/signup", {
+      const res = await fetch("https://lsdguard-gx3u.onrender.com/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userData),
@@ -406,7 +406,7 @@ export default function Signup() {
             <div><strong>{publicStats.statesCount}</strong><span>{t("auth.states")}</span></div>
             <div><strong>{publicStats.accuracyPercent}%</strong><span>{t("auth.accuracy")}</span></div>
           </div>
-        </div> 
+        </div>
 
         <div className="auth-panel auth-login-panel auth-desktop-panel">
           <div className="auth-panel-head">

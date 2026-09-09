@@ -98,7 +98,8 @@ export default function CowDetails() {
     const confirmDelete = window.confirm(t("cowDetails.confirmDeleteScan"));
     if (!confirmDelete) return;
     try {
-      await fetch(`http://localhost:5000/api/scan/${scanId}`, { method: "DELETE" });
+      // await fetch(`http://localhost:5000/api/scan/${scanId}`, { method: "DELETE" });
+      await fetch(`${apiBase}/scan/${scanId}`, { method: "DELETE" });
       setScans((prev) => prev.filter((scan) => scan._id !== scanId));
     } catch (err) {
       console.error("Delete failed:", err);
@@ -180,251 +181,251 @@ export default function CowDetails() {
 
   // Filter tabs
   const vacTabs = [
-    { key: "all",       label: `All (${totalAll})` },
-    { key: "upcoming",  label: `📅 Upcoming (${totalUpcoming})` },
-    { key: "missed",    label: `⚠️ Missed (${totalMissed})` },
+    { key: "all", label: `All (${totalAll})` },
+    { key: "upcoming", label: `📅 Upcoming (${totalUpcoming})` },
+    { key: "missed", label: `⚠️ Missed (${totalMissed})` },
     { key: "completed", label: `✅ Done (${totalCompleted})` },
   ];
 
-  const visibleUpcoming  = vacFilter === "all" || vacFilter === "upcoming";
-  const visibleMissed    = vacFilter === "all" || vacFilter === "missed";
+  const visibleUpcoming = vacFilter === "all" || vacFilter === "upcoming";
+  const visibleMissed = vacFilter === "all" || vacFilter === "missed";
   const visibleCompleted = vacFilter === "all" || vacFilter === "completed";
 
   return (
     <div style={styles.container}>
       <style>{cowDetailsPageCss}</style>
       <div className="cow-details-shell">
-      {/* ── Hero ── */}
-      <div className="cow-details-hero" style={styles.hero}>
-        <button onClick={() => navigate(-1)} style={styles.backBtn}>{"<-"}</button>
-        <div style={styles.heroTop}>
-          <div>
-            <div style={styles.eyebrow}>{t("cowDetails.eyebrow")}</div>
-            <h2 style={styles.heroTitle}>{displayName}</h2>
-            <p style={styles.heroText}>{t("cowDetails.heroText")}</p>
-          </div>
-          {getCowImageUrl(cow) && (
-            <img
-              src={getCowImageUrl(cow)}
-              alt={displayName}
-              style={styles.heroImage}
-            />
-          )}
-        </div>
-      </div>
-
-      <div className="cow-details-body-panel" style={styles.body}>
-
-        {/* ── Basic Info ── */}
-        <div className="cow-details-form-card" style={styles.infoCard}>
-          <div style={styles.infoGrid}>
-            <InfoRow label={t("common.owner")} value={cow.ownerName} />
-            <InfoRow label={t("tracker.gender")} value={cow.gender === "Female" ? t("common.female") : t("common.male")} />
-            <InfoRow label={t("common.age")} value={`${cow.ageYears} ${t("cowDetails.years")} ${cow.ageMonths} ${t("cowDetails.months")}`} />
-            <InfoRow label={t("cowDetails.milkProduction")} value={`${cow.milkProduction} L/day`} />
-            <InfoRow
-              label="Date of birth"
-              value={cow.dateOfBirth ? new Date(cow.dateOfBirth).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : ""}
-            />
-            <InfoRow label="Vaccinations done" value={cow.vaccinationsDone} />
-            <InfoRow label="Vaccinations pending" value={cow.vaccinationsPending} />
-          </div>
-          <div style={styles.reportRow}>
-            <span style={styles.reportLabel}>
-              {cow.healthReport
-                ? t("cowDetails.healthReport")
-                : t("cowDetails.reports", "Reports")}
-            </span>
-            <button
-              type="button"
-              onClick={() => navigate(`/cow/${id}/reports`)}
-              style={styles.reportLinkButton}
-            >
-              {t("cowDetails.viewReport")}
-            </button>
-            <button
-              type="button"
-              style={styles.addReportButton}
-              onClick={() => reportInputRef.current?.click()}
-              disabled={reportUploading}
-            >
-              {reportUploading ? t("common.uploading", "Uploading…") : t("cowDetails.addReport", "Add report")}
-            </button>
-            <input
-              ref={reportInputRef}
-              type="file"
-              accept=".pdf,.jpg,.jpeg,.png"
-              style={{ display: "none" }}
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) handleReportUpload(file);
-                e.target.value = "";
-              }}
-            />
-          </div>
-          {reportError && <div style={styles.reportError}>{reportError}</div>}
-          <div style={styles.reportList}>
-            <div style={styles.reportListTitle}>Stored Cow Reports</div>
-            {doctorReports.length === 0 ? (
-              <div style={styles.reportEmpty}>No cow reports uploaded yet.</div>
-            ) : (
-              doctorReports.map((report, index) => (
-                <a
-                  key={`${report}-${index}`}
-                  href={getReportUrl(report)}
-                  target="_blank"
-                  rel="noreferrer"
-                  style={styles.reportFileLink}
-                >
-                  Report {index + 1}
-                </a>
-              ))
+        {/* ── Hero ── */}
+        <div className="cow-details-hero" style={styles.hero}>
+          <button onClick={() => navigate(-1)} style={styles.backBtn}>{"<-"}</button>
+          <div style={styles.heroTop}>
+            <div>
+              <div style={styles.eyebrow}>{t("cowDetails.eyebrow")}</div>
+              <h2 style={styles.heroTitle}>{displayName}</h2>
+              <p style={styles.heroText}>{t("cowDetails.heroText")}</p>
+            </div>
+            {getCowImageUrl(cow) && (
+              <img
+                src={getCowImageUrl(cow)}
+                alt={displayName}
+                style={styles.heroImage}
+              />
             )}
           </div>
         </div>
 
-        {/* ── Vaccination Section ── */}
-        <div className="cow-details-form-card" style={styles.vacCard}>
+        <div className="cow-details-body-panel" style={styles.body}>
 
-          {/* Header + summary pills */}
-          <div style={styles.vacHeader}>
-            <div style={styles.sectionEyebrow}>Vaccination Schedule</div>
-            <div style={styles.vacSummaryRow}>
-              <div style={styles.vacSummaryPill}>
-                <span style={styles.vacSummaryNum}>{cow.vaccinationsDone || 0}</span>
-                <span style={styles.vacSummaryLabel}>Done</span>
-              </div>
-              <div style={{ ...styles.vacSummaryPill, ...styles.vacSummaryPillBlue }}>
-                <span style={styles.vacSummaryNum}>{totalUpcoming}</span>
-                <span style={styles.vacSummaryLabel}>Upcoming</span>
-              </div>
-              <div style={{ ...styles.vacSummaryPill, ...styles.vacSummaryPillWarn }}>
-                <span style={styles.vacSummaryNum}>{totalMissed}</span>
-                <span style={styles.vacSummaryLabel}>Missed</span>
-              </div>
+          {/* ── Basic Info ── */}
+          <div className="cow-details-form-card" style={styles.infoCard}>
+            <div style={styles.infoGrid}>
+              <InfoRow label={t("common.owner")} value={cow.ownerName} />
+              <InfoRow label={t("tracker.gender")} value={cow.gender === "Female" ? t("common.female") : t("common.male")} />
+              <InfoRow label={t("common.age")} value={`${cow.ageYears} ${t("cowDetails.years")} ${cow.ageMonths} ${t("cowDetails.months")}`} />
+              <InfoRow label={t("cowDetails.milkProduction")} value={`${cow.milkProduction} L/day`} />
+              <InfoRow
+                label="Date of birth"
+                value={cow.dateOfBirth ? new Date(cow.dateOfBirth).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : ""}
+              />
+              <InfoRow label="Vaccinations done" value={cow.vaccinationsDone} />
+              <InfoRow label="Vaccinations pending" value={cow.vaccinationsPending} />
             </div>
-          </div>
-
-          {/* Filter tabs */}
-          <div style={styles.vacTabRow}>
-            {vacTabs.map((tab) => (
+            <div style={styles.reportRow}>
+              <span style={styles.reportLabel}>
+                {cow.healthReport
+                  ? t("cowDetails.healthReport")
+                  : t("cowDetails.reports", "Reports")}
+              </span>
               <button
-                key={tab.key}
                 type="button"
-                style={vacFilter === tab.key ? styles.vacTabActive : styles.vacTab}
-                onClick={() => setVacFilter(tab.key)}
+                onClick={() => navigate(`/cow/${id}/reports`)}
+                style={styles.reportLinkButton}
               >
-                {tab.label}
+                {t("cowDetails.viewReport")}
               </button>
-            ))}
+              <button
+                type="button"
+                style={styles.addReportButton}
+                onClick={() => reportInputRef.current?.click()}
+                disabled={reportUploading}
+              >
+                {reportUploading ? t("common.uploading", "Uploading…") : t("cowDetails.addReport", "Add report")}
+              </button>
+              <input
+                ref={reportInputRef}
+                type="file"
+                accept=".pdf,.jpg,.jpeg,.png"
+                style={{ display: "none" }}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleReportUpload(file);
+                  e.target.value = "";
+                }}
+              />
+            </div>
+            {reportError && <div style={styles.reportError}>{reportError}</div>}
+            <div style={styles.reportList}>
+              <div style={styles.reportListTitle}>Stored Cow Reports</div>
+              {doctorReports.length === 0 ? (
+                <div style={styles.reportEmpty}>No cow reports uploaded yet.</div>
+              ) : (
+                doctorReports.map((report, index) => (
+                  <a
+                    key={`${report}-${index}`}
+                    href={getReportUrl(report)}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={styles.reportFileLink}
+                  >
+                    Report {index + 1}
+                  </a>
+                ))
+              )}
+            </div>
           </div>
 
-          {/* ── Upcoming slots ── */}
-          {visibleUpcoming && upcomingSlots.length > 0 && (
-            <div style={styles.vacGroup}>
-              <div style={styles.vacGroupTitle}>📅 Upcoming Vaccinations</div>
-              {upcomingSlots.map((slot, i) => (
-                <VacSlotCard
-                  key={"up-" + i}
-                  number={i + 1}
-                  slot={slot}
-                  kind="upcoming"
-                />
+          {/* ── Vaccination Section ── */}
+          <div className="cow-details-form-card" style={styles.vacCard}>
+
+            {/* Header + summary pills */}
+            <div style={styles.vacHeader}>
+              <div style={styles.sectionEyebrow}>Vaccination Schedule</div>
+              <div style={styles.vacSummaryRow}>
+                <div style={styles.vacSummaryPill}>
+                  <span style={styles.vacSummaryNum}>{cow.vaccinationsDone || 0}</span>
+                  <span style={styles.vacSummaryLabel}>Done</span>
+                </div>
+                <div style={{ ...styles.vacSummaryPill, ...styles.vacSummaryPillBlue }}>
+                  <span style={styles.vacSummaryNum}>{totalUpcoming}</span>
+                  <span style={styles.vacSummaryLabel}>Upcoming</span>
+                </div>
+                <div style={{ ...styles.vacSummaryPill, ...styles.vacSummaryPillWarn }}>
+                  <span style={styles.vacSummaryNum}>{totalMissed}</span>
+                  <span style={styles.vacSummaryLabel}>Missed</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Filter tabs */}
+            <div style={styles.vacTabRow}>
+              {vacTabs.map((tab) => (
+                <button
+                  key={tab.key}
+                  type="button"
+                  style={vacFilter === tab.key ? styles.vacTabActive : styles.vacTab}
+                  onClick={() => setVacFilter(tab.key)}
+                >
+                  {tab.label}
+                </button>
               ))}
             </div>
-          )}
 
-          {/* ── Missed slots ── */}
-          {visibleMissed && missedDisplay.length > 0 && (
-            <div style={styles.vacGroup}>
-              <div style={styles.vacGroupTitle}>⚠️ Missed / Overdue Vaccinations</div>
-              {missedDisplay.map((slot, i) => (
-                <VacSlotCard
-                  key={"miss-" + i}
-                  number={i + 1}
-                  slot={slot}
-                  kind="missed"
-                />
-              ))}
-            </div>
-          )}
-
-          {/* ── Completed slots ── */}
-          {visibleCompleted && completedDisplay.length > 0 && (
-            <div style={styles.vacGroup}>
-              <div style={styles.vacGroupTitle}>✅ Completed Vaccinations</div>
-              {completedDisplay.map((slot, i) => (
-                <VacSlotCard
-                  key={"done-" + i}
-                  number={i + 1}
-                  slot={slot}
-                  kind="completed"
-                />
-              ))}
-            </div>
-          )}
-
-          {/* Empty state */}
-          {totalAll === 0 && (
-            <div style={styles.vacEmpty}>
-              No vaccination records yet. Add vaccinations when registering or from the Vaccination Tracker.
-            </div>
-          )}
-
-          {/* Empty for current filter */}
-          {totalAll > 0 &&
-            !( (visibleUpcoming && upcomingSlots.length > 0) ||
-               (visibleMissed   && missedDisplay.length > 0) ||
-               (visibleCompleted && completedDisplay.length > 0) ) && (
-            <div style={styles.vacEmpty}>
-              No vaccinations in this category.
-            </div>
-          )}
-        </div>
-
-        {/* ── Scan History ── */}
-        <div className="cow-details-form-card" style={styles.filterCard}>
-          <div>
-            <div style={styles.filterTitle}>{t("cowDetails.scanHistory")}</div>
-            <div style={styles.filterText}>{t("cowDetails.scanHistoryText")}</div>
-            {noFilterActive && scans.length > 3 && (
-              <div style={styles.recentNote}>Showing 3 most recent scans. Select a month to see all.</div>
+            {/* ── Upcoming slots ── */}
+            {visibleUpcoming && upcomingSlots.length > 0 && (
+              <div style={styles.vacGroup}>
+                <div style={styles.vacGroupTitle}>📅 Upcoming Vaccinations</div>
+                {upcomingSlots.map((slot, i) => (
+                  <VacSlotCard
+                    key={"up-" + i}
+                    number={i + 1}
+                    slot={slot}
+                    kind="upcoming"
+                  />
+                ))}
+              </div>
             )}
-          </div>
-          <div style={styles.filterRow}>
-            <select value={monthFilter} onChange={(e) => setMonthFilter(e.target.value)} style={styles.select}>
-              <option value="all">{t("common.month")}</option>
-              <option value="0">{t("months.january")}</option>
-              <option value="1">{t("months.february")}</option>
-              <option value="2">{t("months.march")}</option>
-              <option value="3">{t("months.april")}</option>
-              <option value="4">{t("months.may")}</option>
-              <option value="5">{t("months.june")}</option>
-              <option value="6">{t("months.july")}</option>
-              <option value="7">{t("months.august")}</option>
-              <option value="8">{t("months.september")}</option>
-              <option value="9">{t("months.october")}</option>
-              <option value="10">{t("months.november")}</option>
-              <option value="11">{t("months.december")}</option>
-            </select>
-            <select value={yearFilter} onChange={(e) => setYearFilter(e.target.value)} style={styles.select}>
-              <option value="all">{t("common.year")}</option>
-              <option value="2026">2026</option>
-              <option value="2025">2025</option>
-              <option value="2024">2024</option>
-            </select>
-          </div>
-        </div>
 
-        {filteredScans.length === 0 && (
-          <div style={styles.emptyState}>{t("cowDetails.noScans")}</div>
-        )}
-        {filteredScans.map((scan) => (
-          <div key={scan._id} className="cow-details-form-card" style={styles.scanCard}>
-            <ScanCard scan={scan} onDelete={handleDeleteScan} />
+            {/* ── Missed slots ── */}
+            {visibleMissed && missedDisplay.length > 0 && (
+              <div style={styles.vacGroup}>
+                <div style={styles.vacGroupTitle}>⚠️ Missed / Overdue Vaccinations</div>
+                {missedDisplay.map((slot, i) => (
+                  <VacSlotCard
+                    key={"miss-" + i}
+                    number={i + 1}
+                    slot={slot}
+                    kind="missed"
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* ── Completed slots ── */}
+            {visibleCompleted && completedDisplay.length > 0 && (
+              <div style={styles.vacGroup}>
+                <div style={styles.vacGroupTitle}>✅ Completed Vaccinations</div>
+                {completedDisplay.map((slot, i) => (
+                  <VacSlotCard
+                    key={"done-" + i}
+                    number={i + 1}
+                    slot={slot}
+                    kind="completed"
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* Empty state */}
+            {totalAll === 0 && (
+              <div style={styles.vacEmpty}>
+                No vaccination records yet. Add vaccinations when registering or from the Vaccination Tracker.
+              </div>
+            )}
+
+            {/* Empty for current filter */}
+            {totalAll > 0 &&
+              !((visibleUpcoming && upcomingSlots.length > 0) ||
+                (visibleMissed && missedDisplay.length > 0) ||
+                (visibleCompleted && completedDisplay.length > 0)) && (
+                <div style={styles.vacEmpty}>
+                  No vaccinations in this category.
+                </div>
+              )}
           </div>
-        ))}
-      </div>
+
+          {/* ── Scan History ── */}
+          <div className="cow-details-form-card" style={styles.filterCard}>
+            <div>
+              <div style={styles.filterTitle}>{t("cowDetails.scanHistory")}</div>
+              <div style={styles.filterText}>{t("cowDetails.scanHistoryText")}</div>
+              {noFilterActive && scans.length > 3 && (
+                <div style={styles.recentNote}>Showing 3 most recent scans. Select a month to see all.</div>
+              )}
+            </div>
+            <div style={styles.filterRow}>
+              <select value={monthFilter} onChange={(e) => setMonthFilter(e.target.value)} style={styles.select}>
+                <option value="all">{t("common.month")}</option>
+                <option value="0">{t("months.january")}</option>
+                <option value="1">{t("months.february")}</option>
+                <option value="2">{t("months.march")}</option>
+                <option value="3">{t("months.april")}</option>
+                <option value="4">{t("months.may")}</option>
+                <option value="5">{t("months.june")}</option>
+                <option value="6">{t("months.july")}</option>
+                <option value="7">{t("months.august")}</option>
+                <option value="8">{t("months.september")}</option>
+                <option value="9">{t("months.october")}</option>
+                <option value="10">{t("months.november")}</option>
+                <option value="11">{t("months.december")}</option>
+              </select>
+              <select value={yearFilter} onChange={(e) => setYearFilter(e.target.value)} style={styles.select}>
+                <option value="all">{t("common.year")}</option>
+                <option value="2026">2026</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+              </select>
+            </div>
+          </div>
+
+          {filteredScans.length === 0 && (
+            <div style={styles.emptyState}>{t("cowDetails.noScans")}</div>
+          )}
+          {filteredScans.map((scan) => (
+            <div key={scan._id} className="cow-details-form-card" style={styles.scanCard}>
+              <ScanCard scan={scan} onDelete={handleDeleteScan} />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -432,34 +433,34 @@ export default function CowDetails() {
 
 /* ── Vaccination Slot Card component ─────────────────────────────────── */
 function VacSlotCard({ number, slot, kind }) {
-  const hasDate   = !!slot.date;
-  const hasTime   = !!slot.time;
+  const hasDate = !!slot.date;
+  const hasTime = !!slot.time;
   const hasDoctor = !!slot.doctor;
 
   const cardStyle =
     kind === "completed" ? styles.vacSlotDone :
-    kind === "missed"    ? styles.vacSlotMissed :
-                           styles.vacSlotUpcoming;
+      kind === "missed" ? styles.vacSlotMissed :
+        styles.vacSlotUpcoming;
 
   const badgeStyle =
     kind === "completed" ? styles.badgeDone :
-    kind === "missed"    ? styles.badgeMissed :
-                           styles.badgeUpcoming;
+      kind === "missed" ? styles.badgeMissed :
+        styles.badgeUpcoming;
 
   const statusStyle =
     kind === "completed" ? styles.statusDone :
-    kind === "missed"    ? styles.statusMissed :
-                           styles.statusUpcoming;
+      kind === "missed" ? styles.statusMissed :
+        styles.statusUpcoming;
 
   const statusText =
     kind === "completed" ? "✓ Completed" :
-    kind === "missed"    ? "⚠️ Missed" :
-                           "📅 Upcoming";
+      kind === "missed" ? "⚠️ Missed" :
+        "📅 Upcoming";
 
   const label =
     kind === "completed" ? `Vaccination ${number} — Completed` :
-    kind === "missed"    ? `Vaccination ${number} — Missed` :
-                           `Vaccination ${number} — Upcoming`;
+      kind === "missed" ? `Vaccination ${number} — Missed` :
+        `Vaccination ${number} — Upcoming`;
 
   return (
     <div style={cardStyle}>
@@ -582,24 +583,24 @@ const styles = {
 
   // Slot cards
   vacSlotUpcoming: { padding: "14px", borderRadius: "18px", border: "2px solid var(--app-border)", background: "var(--surface-soft)", marginBottom: "10px" },
-  vacSlotMissed:   { padding: "14px", borderRadius: "18px", border: "2px solid var(--warning-border)", background: "var(--warning-soft)", marginBottom: "10px" },
-  vacSlotDone:     { padding: "14px", borderRadius: "18px", border: "1px solid var(--success-border)", background: "var(--success-soft)", marginBottom: "10px" },
+  vacSlotMissed: { padding: "14px", borderRadius: "18px", border: "2px solid var(--warning-border)", background: "var(--warning-soft)", marginBottom: "10px" },
+  vacSlotDone: { padding: "14px", borderRadius: "18px", border: "1px solid var(--success-border)", background: "var(--success-soft)", marginBottom: "10px" },
 
   slotTopRow: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px", flexWrap: "wrap", gap: "6px" },
 
   badgeUpcoming: { display: "inline-flex", alignItems: "center", background: "var(--surface-soft-2)", color: "var(--text)", padding: "5px 12px", borderRadius: "999px", fontSize: "12px", fontWeight: "700" },
-  badgeMissed:   { display: "inline-flex", alignItems: "center", background: "var(--warning-soft-2)", color: "var(--warning-text)", padding: "5px 12px", borderRadius: "999px", fontSize: "12px", fontWeight: "700" },
-  badgeDone:     { display: "inline-flex", alignItems: "center", background: "var(--success-soft-2)", color: "var(--success-text)", padding: "5px 12px", borderRadius: "999px", fontSize: "12px", fontWeight: "700" },
+  badgeMissed: { display: "inline-flex", alignItems: "center", background: "var(--warning-soft-2)", color: "var(--warning-text)", padding: "5px 12px", borderRadius: "999px", fontSize: "12px", fontWeight: "700" },
+  badgeDone: { display: "inline-flex", alignItems: "center", background: "var(--success-soft-2)", color: "var(--success-text)", padding: "5px 12px", borderRadius: "999px", fontSize: "12px", fontWeight: "700" },
 
   statusUpcoming: { fontSize: "11px", fontWeight: "700", color: "var(--text)", background: "var(--surface-soft)", padding: "4px 10px", borderRadius: "999px", border: "1px solid var(--app-border)" },
-  statusMissed:   { fontSize: "11px", fontWeight: "700", color: "var(--warning-text)", background: "var(--warning-soft-2)", padding: "4px 10px", borderRadius: "999px" },
-  statusDone:     { fontSize: "11px", fontWeight: "700", color: "var(--success-text)", background: "var(--success-soft-2)", padding: "4px 10px", borderRadius: "999px" },
+  statusMissed: { fontSize: "11px", fontWeight: "700", color: "var(--warning-text)", background: "var(--warning-soft-2)", padding: "4px 10px", borderRadius: "999px" },
+  statusDone: { fontSize: "11px", fontWeight: "700", color: "var(--success-text)", background: "var(--success-soft-2)", padding: "4px 10px", borderRadius: "999px" },
 
   slotMetaRow: { display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "8px" },
-  slotChip:     { background: "var(--card)", border: "1px solid var(--app-border)", borderRadius: "999px", padding: "5px 12px", fontSize: "12px", fontWeight: "600", color: "var(--text)" },
-  slotChipMuted:{ border: "1px dashed var(--app-border)", borderRadius: "999px", padding: "5px 12px", fontSize: "12px", color: "var(--text-secondary)", background: "transparent" },
+  slotChip: { background: "var(--card)", border: "1px solid var(--app-border)", borderRadius: "999px", padding: "5px 12px", fontSize: "12px", fontWeight: "600", color: "var(--text)" },
+  slotChipMuted: { border: "1px dashed var(--app-border)", borderRadius: "999px", padding: "5px 12px", fontSize: "12px", color: "var(--text-secondary)", background: "transparent" },
 
-  slotDoctorRow:   { display: "flex", alignItems: "center", gap: "8px", fontSize: "13px" },
+  slotDoctorRow: { display: "flex", alignItems: "center", gap: "8px", fontSize: "13px" },
   slotDoctorLabel: { color: "var(--text-secondary)", fontWeight: "600" },
   slotDoctorValue: { color: "var(--text)", fontWeight: "700" },
 
@@ -610,8 +611,8 @@ const styles = {
   // Scan history
   filterCard: { background: "var(--card)", borderRadius: "24px", padding: "18px", boxShadow: "0 14px 30px rgba(42, 82, 52, 0.08)", border: "1px solid var(--app-border)", marginBottom: "14px" },
   filterTitle: { fontSize: "18px", fontWeight: "700", color: "var(--text)" },
-  filterText:  { marginTop: "6px", fontSize: "13px", color: "var(--text-secondary)" },
-  filterRow:   { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginTop: "14px" },
+  filterText: { marginTop: "6px", fontSize: "13px", color: "var(--text-secondary)" },
+  filterRow: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginTop: "14px" },
   select: { width: "100%", padding: "14px 15px", borderRadius: "16px", border: "1px solid var(--app-border)", background: "var(--input)", fontSize: "14px", color: "var(--text)" },
   emptyState: { background: "var(--card)", borderRadius: "24px", padding: "20px", textAlign: "center", color: "var(--text-secondary)", boxShadow: "0 14px 30px rgba(42, 82, 52, 0.08)", border: "1px solid var(--app-border)" },
   recentNote: { marginTop: "8px", fontSize: "12px", color: "var(--success-text)", fontWeight: "600", background: "var(--success-soft)", padding: "6px 12px", borderRadius: "10px", border: "1px solid var(--success-border)" },

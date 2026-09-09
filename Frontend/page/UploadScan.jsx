@@ -7,21 +7,21 @@ const ML_API_URL =
 
 const APP_API_BASE =
   (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE) ||
-  "http://localhost:5000";
+  "https://lsdguard-gx3u.onrender.com";
 
 const imageSlots = [
-  { key: "side",  labelKey: "uploadScan.sideView" },
-  { key: "neck",  labelKey: "uploadScan.neck" },
-  { key: "back",  labelKey: "uploadScan.back" },
-  { key: "legs",  labelKey: "uploadScan.legs" },
+  { key: "side", labelKey: "uploadScan.sideView" },
+  { key: "neck", labelKey: "uploadScan.neck" },
+  { key: "back", labelKey: "uploadScan.back" },
+  { key: "legs", labelKey: "uploadScan.legs" },
   { key: "under", labelKey: "uploadScan.under" },
 ];
 
 const imageSlotLabels = {
-  side:  "Side image",
-  neck:  "Neck image",
-  back:  "Back image",
-  legs:  "Legs image",
+  side: "Side image",
+  neck: "Neck image",
+  back: "Back image",
+  legs: "Legs image",
   under: "Under image",
 };
 
@@ -298,8 +298,8 @@ const formatMlError = (errorData, uploadedFiles) => {
 
   const invalidDetails = detail.invalid_images
     .map((item) => {
-      const file  = uploadedFiles[item.index];
-      const slot  = imageSlots[item.index]?.key;
+      const file = uploadedFiles[item.index];
+      const slot = imageSlots[item.index]?.key;
       const label = imageSlotLabels[slot] || `Image ${item.index + 1}`;
       const fileName = file?.name ? ` (${file.name})` : "";
       const reasons =
@@ -316,8 +316,8 @@ const formatMlError = (errorData, uploadedFiles) => {
 };
 
 export default function UploadScan() {
-  const navigate   = useNavigate();
-  const { cowId }  = useParams();
+  const navigate = useNavigate();
+  const { cowId } = useParams();
   const language = "en";
   const alertShown = useRef(false);
   const pageTopRef = useRef(null);
@@ -329,7 +329,7 @@ export default function UploadScan() {
     return storedUser.location || storedUser.village || "";
   });
 
-  const [animalAge, setAnimalAge]           = useState("");
+  const [animalAge, setAnimalAge] = useState("");
   const [calculatedAgeInfo, setCalculatedAgeInfo] = useState(null);
 
   useEffect(() => {
@@ -339,7 +339,7 @@ export default function UploadScan() {
     }
 
     // Prefill village from stored farmer location (set at sign-in)
-    const storedUser    = JSON.parse(localStorage.getItem("user") || "{}");
+    const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
     const storedVillage = storedUser.location || storedUser.village;
 
     if (storedVillage) {
@@ -347,7 +347,7 @@ export default function UploadScan() {
     } else if (storedUser._id) {
       (async () => {
         try {
-          const res  = await fetch(`${APP_API_BASE}/api/user/${storedUser._id}`);
+          const res = await fetch(`${APP_API_BASE}/api/user/${storedUser._id}`);
           const data = await res.json();
           if (res.ok) {
             const dbVillage = data.location || data.village || "";
@@ -372,23 +372,23 @@ export default function UploadScan() {
     const dob = new Date(dobString);
     if (Number.isNaN(dob.getTime())) return null;
 
-    const today  = new Date();
-    let years    = today.getFullYear() - dob.getFullYear();
-    let months   = today.getMonth() - dob.getMonth();
+    const today = new Date();
+    let years = today.getFullYear() - dob.getFullYear();
+    let months = today.getMonth() - dob.getMonth();
     if (today.getDate() < dob.getDate()) months -= 1;
     if (months < 0) { years -= 1; months += 12; }
 
     const category =
-      years < 5  ? "young_cow" :
-      years < 12 ? "adult_cow" :
-                   "aged_cow";
+      years < 5 ? "young_cow" :
+        years < 12 ? "adult_cow" :
+          "aged_cow";
 
     const label =
       category === "young_cow"
         ? t("uploadScan.age.youngCow", "Young Cow (0-5 years)")
         : category === "adult_cow"
-        ? t("uploadScan.age.adultCow", "Adult Cow (5-12 years)")
-        : t("uploadScan.age.agedCow", "Aged Cow (12-20 years)");
+          ? t("uploadScan.age.adultCow", "Adult Cow (5-12 years)")
+          : t("uploadScan.age.agedCow", "Aged Cow (12-20 years)");
 
     return { years, months, category, label };
   };
@@ -439,9 +439,9 @@ export default function UploadScan() {
 
   const ageLockedByDOB = Boolean(calculatedAgeInfo?.category);
 
-  const uploadedCount      = Object.values(images).filter(Boolean).length;
+  const uploadedCount = Object.values(images).filter(Boolean).length;
   const checklistCompleted = Object.values(checklist).every(Boolean);
-  const hasSideImage       = Boolean(images.side);
+  const hasSideImage = Boolean(images.side);
 
   const assignScanFiles = (fileList) => {
     const files = Array.from(fileList || []);
@@ -583,31 +583,31 @@ export default function UploadScan() {
         });
 
         const saveForm = new FormData();
-        saveForm.append("cowId",                cowId);
-        saveForm.append("lsd_percent",          mlData.lsd_percent);
-        saveForm.append("avg_score",            mlData.avg_score);
-        saveForm.append("severity",             mlData.severity);
-        saveForm.append("daylight",             checklist.daylight);
-        saveForm.append("centered",             checklist.centered);
-        saveForm.append("clear",                checklist.clear);
-        saveForm.append("symptom_fever",        earlySymptoms.fever);
-        saveForm.append("symptom_milkReduced",  earlySymptoms.milkReduced);
-        saveForm.append("symptom_eatingLess",   earlySymptoms.eatingLess);
-        saveForm.append("symptom_discharge",    earlySymptoms.discharge);
-        saveForm.append("symptom_vaccinated",   earlySymptoms.vaccinated);
-        saveForm.append("villageName",          villageName);
-        saveForm.append("animalAge",            animalAge);
-        saveForm.append("per_image",            JSON.stringify(mlData.per_image || []));
-        saveForm.append("per_image_severity",   JSON.stringify(mlData.per_image_severity || []));
-        saveForm.append("visibility_scores",    JSON.stringify(mlData.visibility_scores || []));
-        saveForm.append("reportDate",           reportDate);   // FIX: use local var, not savedData
-        saveForm.append("remedies",             JSON.stringify(remedies));
-        saveForm.append("remedySource",         mlData.ai_advice_source || "");
-        saveForm.append("remedyModel",          mlData.ai_advice_model || "");
-        saveForm.append("aiAdvice",             mlData.ai_advice || "");
-        saveForm.append("aiAdviceSource",       mlData.ai_advice_source || "");
-        saveForm.append("aiAdviceModel",        mlData.ai_advice_model || "");
-        saveForm.append("mlValidationToken",    validationProof?.token || "");
+        saveForm.append("cowId", cowId);
+        saveForm.append("lsd_percent", mlData.lsd_percent);
+        saveForm.append("avg_score", mlData.avg_score);
+        saveForm.append("severity", mlData.severity);
+        saveForm.append("daylight", checklist.daylight);
+        saveForm.append("centered", checklist.centered);
+        saveForm.append("clear", checklist.clear);
+        saveForm.append("symptom_fever", earlySymptoms.fever);
+        saveForm.append("symptom_milkReduced", earlySymptoms.milkReduced);
+        saveForm.append("symptom_eatingLess", earlySymptoms.eatingLess);
+        saveForm.append("symptom_discharge", earlySymptoms.discharge);
+        saveForm.append("symptom_vaccinated", earlySymptoms.vaccinated);
+        saveForm.append("villageName", villageName);
+        saveForm.append("animalAge", animalAge);
+        saveForm.append("per_image", JSON.stringify(mlData.per_image || []));
+        saveForm.append("per_image_severity", JSON.stringify(mlData.per_image_severity || []));
+        saveForm.append("visibility_scores", JSON.stringify(mlData.visibility_scores || []));
+        saveForm.append("reportDate", reportDate);   // FIX: use local var, not savedData
+        saveForm.append("remedies", JSON.stringify(remedies));
+        saveForm.append("remedySource", mlData.ai_advice_source || "");
+        saveForm.append("remedyModel", mlData.ai_advice_model || "");
+        saveForm.append("aiAdvice", mlData.ai_advice || "");
+        saveForm.append("aiAdviceSource", mlData.ai_advice_source || "");
+        saveForm.append("aiAdviceModel", mlData.ai_advice_model || "");
+        saveForm.append("mlValidationToken", validationProof?.token || "");
         saveForm.append("mlValidationExpiresAt", validationProof?.expires_at || "");
         saveForm.append(
           "mlValidationImageHashes",
@@ -648,12 +648,12 @@ export default function UploadScan() {
         cowId,
         ...savedData,
         // ML fields always win over any backend data
-        lsd_percent:        mlData.lsd_percent,
-        avg_score:          mlData.avg_score,
-        severity:           mlData.severity,
-        per_image:          mlData.per_image,
+        lsd_percent: mlData.lsd_percent,
+        avg_score: mlData.avg_score,
+        severity: mlData.severity,
+        per_image: mlData.per_image,
         per_image_severity: mlData.per_image_severity,
-        visibility_scores:  mlData.visibility_scores,
+        visibility_scores: mlData.visibility_scores,
         reportDate:
           savedData.reportDate ||
           new Date().toLocaleDateString("en-IN", {
@@ -664,24 +664,24 @@ export default function UploadScan() {
           storedUser.village ||
           storedUser.location ||
           "Unknown",
-        villageName:    villageName || savedData.villageName,
-        animalAge:      animalAge   || savedData.animalAge,
+        villageName: villageName || savedData.villageName,
+        animalAge: animalAge || savedData.animalAge,
         earlySymptoms: {
-          fever:        earlySymptoms.fever,
-          milkReduced:  earlySymptoms.milkReduced,
-          eatingLess:   earlySymptoms.eatingLess,
-          discharge:    earlySymptoms.discharge,
-          vaccinated:   earlySymptoms.vaccinated,
+          fever: earlySymptoms.fever,
+          milkReduced: earlySymptoms.milkReduced,
+          eatingLess: earlySymptoms.eatingLess,
+          discharge: earlySymptoms.discharge,
+          vaccinated: earlySymptoms.vaccinated,
         },
         remedies: resultRemedies,
         remedySource: savedScan.remedySource || mlData.ai_advice_source || savedData.remedySource || "",
-        remedyModel:  savedScan.remedyModel || mlData.ai_advice_model || savedData.remedyModel || "",
-        aiAdvice:     savedScan.aiAdvice || mlData.ai_advice || savedData.aiAdvice || "",
+        remedyModel: savedScan.remedyModel || mlData.ai_advice_model || savedData.remedyModel || "",
+        aiAdvice: savedScan.aiAdvice || mlData.ai_advice || savedData.aiAdvice || "",
         aiAdviceSource: savedScan.aiAdviceSource || mlData.ai_advice_source || savedData.aiAdviceSource || "",
-        aiAdviceModel:  savedScan.aiAdviceModel || mlData.ai_advice_model || savedData.aiAdviceModel || "",
+        aiAdviceModel: savedScan.aiAdviceModel || mlData.ai_advice_model || savedData.aiAdviceModel || "",
         saveWarning,
-        preview:      previewUrl,
-        ownerName:    storedUser.name || "",
+        preview: previewUrl,
+        ownerName: storedUser.name || "",
       };
 
       navigate(`/scan-result/${cowId}`, { state: resultState });
@@ -696,208 +696,208 @@ export default function UploadScan() {
     <div style={styles.container} ref={pageTopRef}>
       <style>{scanPageCss}</style>
       <div className="scan-form-shell">
-      <div className="scan-hero" style={styles.hero}>
-        <button style={styles.backBtn} onClick={() => navigate(-1)}>
-          ←
-        </button>
+        <div className="scan-hero" style={styles.hero}>
+          <button style={styles.backBtn} onClick={() => navigate(-1)}>
+            ←
+          </button>
 
-        <div>
-          <div style={styles.eyebrow}>{t("uploadScan.eyebrow")}</div>
-          <h2 style={styles.heroTitle}>{t("uploadScan.title")}</h2>
-          <p style={styles.heroText}>{t("uploadScan.heroText")}</p>
-        </div>
-      </div>
-
-      <div className="scan-body-panel">
-      <div style={styles.list}>
-        <MultiImageUpload
-          images={images}
-          uploadedCount={uploadedCount}
-          onChange={handleMultiUpload}
-          onDrop={handleMultiDrop}
-          onRemove={removeImage}
-          onPreview={(img) => setPreviewImage(img)}
-        />
-      </div>
-
-      <div className="scan-form-stack">
-      <div className="scan-form-card" style={styles.card}>
-        <div style={styles.cardTitle}>{t("uploadScan.checklist")}</div>
-        <div style={styles.autoChecklistHint}>
-          {t(
-            "uploadScan.autoChecklistHint",
-            "Photo quality is auto-confirmed after selecting 3 images. You can still change any item.",
-          )}
-        </div>
-        <button
-          type="button"
-          style={styles.selectAllBtn}
-          onClick={handleChecklistSelectAll}
-        >
-          Select all
-        </button>
-
-        <label style={styles.checkRow}>
-          <span style={styles.checkText}>{t("uploadScan.daylight")}</span>
-          <input
-            type="checkbox"
-            checked={checklist.daylight}
-            onChange={(e) => setChecklist({ ...checklist, daylight: e.target.checked })}
-            style={{ transform: "scale(2)", cursor: "pointer" }}
-          />
-        </label>
-        <label style={styles.checkRow}>
-          <span style={styles.checkText}>{t("uploadScan.centered")}</span>
-          <input
-            type="checkbox"
-            checked={checklist.centered}
-            onChange={(e) => setChecklist({ ...checklist, centered: e.target.checked })}
-            style={{ transform: "scale(2)", cursor: "pointer" }}
-          />
-        </label>
-        <label style={styles.checkRow}>
-          <span style={styles.checkText}>{t("uploadScan.clear")}</span>
-          <input
-            type="checkbox"
-            checked={checklist.clear}
-            onChange={(e) => setChecklist({ ...checklist, clear: e.target.checked })}
-            style={{ transform: "scale(2)", cursor: "pointer" }}
-          />
-        </label>
-      </div>
-
-      <div className="scan-form-card" style={styles.card}>
-        <div style={styles.cardTitle}>
-          {t("uploadScan.earlySymptoms", "Early Symptoms")}
+          <div>
+            <div style={styles.eyebrow}>{t("uploadScan.eyebrow")}</div>
+            <h2 style={styles.heroTitle}>{t("uploadScan.title")}</h2>
+            <p style={styles.heroText}>{t("uploadScan.heroText")}</p>
+          </div>
         </div>
 
-        <SymptomRow
-          label={t("uploadScan.fever", "Fever?")}
-          checked={earlySymptoms.fever}
-          onChange={(val) => {
-            setSymptomsTouched(true);
-            setEarlySymptoms((prev) => ({ ...prev, fever: val }));
-          }}
-        />
-        <SymptomRow
-          label={t("uploadScan.milkReduced", "Milk reduced?")}
-          checked={earlySymptoms.milkReduced}
-          onChange={(val) => {
-            setSymptomsTouched(true);
-            setEarlySymptoms((prev) => ({ ...prev, milkReduced: val }));
-          }}
-        />
-        <SymptomRow
-          label={t("uploadScan.eatingLess", "Eating less?")}
-          checked={earlySymptoms.eatingLess}
-          onChange={(val) => {
-            setSymptomsTouched(true);
-            setEarlySymptoms((prev) => ({ ...prev, eatingLess: val }));
-          }}
-        />
-        <SymptomRow
-          label={t("uploadScan.discharge", "Eye / nose discharge?")}
-          checked={earlySymptoms.discharge}
-          onChange={(val) => {
-            setSymptomsTouched(true);
-            setEarlySymptoms((prev) => ({ ...prev, discharge: val }));
-          }}
-        />
-        <SymptomRow
-          label={t("uploadScan.vaccinated", "Vaccinated?")}
-          checked={earlySymptoms.vaccinated}
-          onChange={(val) => {
-            setSymptomsTouched(true);
-            setEarlySymptoms((prev) => ({ ...prev, vaccinated: val }));
-          }}
-        />
-
-        <div style={styles.fieldGroup}>
-          <label style={styles.fieldLabel}>
-            {t("uploadScan.villageName", "Village Name")}
-          </label>
-          <div style={styles.inputWrapper}>
-            <input
-              type="text"
-              value={villageName}
-              readOnly
-              placeholder={t("uploadScan.villagePlaceholder", "Auto-filled from profile")}
-              style={styles.textInput}
+        <div className="scan-body-panel">
+          <div style={styles.list}>
+            <MultiImageUpload
+              images={images}
+              uploadedCount={uploadedCount}
+              onChange={handleMultiUpload}
+              onDrop={handleMultiDrop}
+              onRemove={removeImage}
+              onPreview={(img) => setPreviewImage(img)}
             />
           </div>
-        </div>
 
-        <div style={styles.fieldGroup}>
-          <label style={styles.fieldLabel}>
-            {t("uploadScan.animalAge", "Animal Age")}
-          </label>
-          <div style={styles.selectWrapper}>
-            <select
-              value={animalAge}
-              onChange={(e) => setAnimalAge(e.target.value)}
-              disabled={ageLockedByDOB}
-              style={styles.select}
-            >
-              <option value="">{t("uploadScan.selectAge", "Select age")}</option>
-              <option value="young_cow">{t("uploadScan.age.youngCow", "Young Cow (0-5 years)")}</option>
-              <option value="adult_cow">{t("uploadScan.age.adultCow", "Adult Cow (5-12 years)")}</option>
-              <option value="aged_cow">{t("uploadScan.age.agedCow", "Aged Cow (12-20 years)")}</option>
-            </select>
-          </div>
-          {calculatedAgeInfo && (
-            <div style={styles.ageHint}>
-              {`Age auto-calculated from birthdate: ${calculatedAgeInfo.years}y ${calculatedAgeInfo.months}m (${calculatedAgeInfo.label})`}
+          <div className="scan-form-stack">
+            <div className="scan-form-card" style={styles.card}>
+              <div style={styles.cardTitle}>{t("uploadScan.checklist")}</div>
+              <div style={styles.autoChecklistHint}>
+                {t(
+                  "uploadScan.autoChecklistHint",
+                  "Photo quality is auto-confirmed after selecting 3 images. You can still change any item.",
+                )}
+              </div>
+              <button
+                type="button"
+                style={styles.selectAllBtn}
+                onClick={handleChecklistSelectAll}
+              >
+                Select all
+              </button>
+
+              <label style={styles.checkRow}>
+                <span style={styles.checkText}>{t("uploadScan.daylight")}</span>
+                <input
+                  type="checkbox"
+                  checked={checklist.daylight}
+                  onChange={(e) => setChecklist({ ...checklist, daylight: e.target.checked })}
+                  style={{ transform: "scale(2)", cursor: "pointer" }}
+                />
+              </label>
+              <label style={styles.checkRow}>
+                <span style={styles.checkText}>{t("uploadScan.centered")}</span>
+                <input
+                  type="checkbox"
+                  checked={checklist.centered}
+                  onChange={(e) => setChecklist({ ...checklist, centered: e.target.checked })}
+                  style={{ transform: "scale(2)", cursor: "pointer" }}
+                />
+              </label>
+              <label style={styles.checkRow}>
+                <span style={styles.checkText}>{t("uploadScan.clear")}</span>
+                <input
+                  type="checkbox"
+                  checked={checklist.clear}
+                  onChange={(e) => setChecklist({ ...checklist, clear: e.target.checked })}
+                  style={{ transform: "scale(2)", cursor: "pointer" }}
+                />
+              </label>
             </div>
-          )}
+
+            <div className="scan-form-card" style={styles.card}>
+              <div style={styles.cardTitle}>
+                {t("uploadScan.earlySymptoms", "Early Symptoms")}
+              </div>
+
+              <SymptomRow
+                label={t("uploadScan.fever", "Fever?")}
+                checked={earlySymptoms.fever}
+                onChange={(val) => {
+                  setSymptomsTouched(true);
+                  setEarlySymptoms((prev) => ({ ...prev, fever: val }));
+                }}
+              />
+              <SymptomRow
+                label={t("uploadScan.milkReduced", "Milk reduced?")}
+                checked={earlySymptoms.milkReduced}
+                onChange={(val) => {
+                  setSymptomsTouched(true);
+                  setEarlySymptoms((prev) => ({ ...prev, milkReduced: val }));
+                }}
+              />
+              <SymptomRow
+                label={t("uploadScan.eatingLess", "Eating less?")}
+                checked={earlySymptoms.eatingLess}
+                onChange={(val) => {
+                  setSymptomsTouched(true);
+                  setEarlySymptoms((prev) => ({ ...prev, eatingLess: val }));
+                }}
+              />
+              <SymptomRow
+                label={t("uploadScan.discharge", "Eye / nose discharge?")}
+                checked={earlySymptoms.discharge}
+                onChange={(val) => {
+                  setSymptomsTouched(true);
+                  setEarlySymptoms((prev) => ({ ...prev, discharge: val }));
+                }}
+              />
+              <SymptomRow
+                label={t("uploadScan.vaccinated", "Vaccinated?")}
+                checked={earlySymptoms.vaccinated}
+                onChange={(val) => {
+                  setSymptomsTouched(true);
+                  setEarlySymptoms((prev) => ({ ...prev, vaccinated: val }));
+                }}
+              />
+
+              <div style={styles.fieldGroup}>
+                <label style={styles.fieldLabel}>
+                  {t("uploadScan.villageName", "Village Name")}
+                </label>
+                <div style={styles.inputWrapper}>
+                  <input
+                    type="text"
+                    value={villageName}
+                    readOnly
+                    placeholder={t("uploadScan.villagePlaceholder", "Auto-filled from profile")}
+                    style={styles.textInput}
+                  />
+                </div>
+              </div>
+
+              <div style={styles.fieldGroup}>
+                <label style={styles.fieldLabel}>
+                  {t("uploadScan.animalAge", "Animal Age")}
+                </label>
+                <div style={styles.selectWrapper}>
+                  <select
+                    value={animalAge}
+                    onChange={(e) => setAnimalAge(e.target.value)}
+                    disabled={ageLockedByDOB}
+                    style={styles.select}
+                  >
+                    <option value="">{t("uploadScan.selectAge", "Select age")}</option>
+                    <option value="young_cow">{t("uploadScan.age.youngCow", "Young Cow (0-5 years)")}</option>
+                    <option value="adult_cow">{t("uploadScan.age.adultCow", "Adult Cow (5-12 years)")}</option>
+                    <option value="aged_cow">{t("uploadScan.age.agedCow", "Aged Cow (12-20 years)")}</option>
+                  </select>
+                </div>
+                {calculatedAgeInfo && (
+                  <div style={styles.ageHint}>
+                    {`Age auto-calculated from birthdate: ${calculatedAgeInfo.years}y ${calculatedAgeInfo.months}m (${calculatedAgeInfo.label})`}
+                  </div>
+                )}
+              </div>
+            </div>
+
+          </div>
+
+          <div className="scan-counter-card" style={styles.counterCard}>
+            {t(
+              "uploadScan.uploadedCounter",
+              "Uploaded {{count}} / 3 images required",
+              { count: uploadedCount }
+            )}
+          </div>
+
+          {scanError && <div className="scan-error-card" style={styles.errorCard}>{scanError}</div>}
+
+          <button
+            className="scan-submit-button"
+            style={{
+              ...styles.uploadBtn,
+              background:
+                uploadedCount >= MIN_SCAN_IMAGES && checklistCompleted && hasSideImage
+                  ? "linear-gradient(135deg, #219653 0%, #34b566 100%)"
+                  : "#d1d5db",
+              cursor:
+                uploadedCount >= MIN_SCAN_IMAGES && checklistCompleted && hasSideImage && !isScanning
+                  ? "pointer"
+                  : "not-allowed",
+            }}
+            disabled={isScanning || uploadedCount < MIN_SCAN_IMAGES || !checklistCompleted || !hasSideImage}
+            onClick={handleScan}
+          >
+            {isScanning ? (
+              <span style={styles.scanningInner}>
+                <span style={styles.spinner} />
+                {t("uploadScan.scanning", "Scanning…")}
+              </span>
+            ) : uploadedCount < MIN_SCAN_IMAGES ? (
+              t("uploadScan.uploadMore", "Upload {{count}} more image(s)", {
+                count: MIN_SCAN_IMAGES - uploadedCount,
+              })
+            ) : !checklistCompleted ? (
+              t("uploadScan.completeChecklist")
+            ) : !hasSideImage ? (
+              t("uploadScan.sideRequired", "Side view image is required")
+            ) : (
+              t("uploadScan.uploadAndScan")
+            )}
+          </button>
         </div>
-      </div>
-
-      </div>
-
-      <div className="scan-counter-card" style={styles.counterCard}>
-        {t(
-          "uploadScan.uploadedCounter",
-          "Uploaded {{count}} / 3 images required",
-          { count: uploadedCount }
-        )}
-      </div>
-
-      {scanError && <div className="scan-error-card" style={styles.errorCard}>{scanError}</div>}
-
-      <button
-        className="scan-submit-button"
-        style={{
-          ...styles.uploadBtn,
-          background:
-            uploadedCount >= MIN_SCAN_IMAGES && checklistCompleted && hasSideImage
-              ? "linear-gradient(135deg, #219653 0%, #34b566 100%)"
-              : "#d1d5db",
-          cursor:
-            uploadedCount >= MIN_SCAN_IMAGES && checklistCompleted && hasSideImage && !isScanning
-              ? "pointer"
-              : "not-allowed",
-        }}
-        disabled={isScanning || uploadedCount < MIN_SCAN_IMAGES || !checklistCompleted || !hasSideImage}
-        onClick={handleScan}
-      >
-        {isScanning ? (
-          <span style={styles.scanningInner}>
-            <span style={styles.spinner} />
-            {t("uploadScan.scanning", "Scanning…")}
-          </span>
-        ) : uploadedCount < MIN_SCAN_IMAGES ? (
-          t("uploadScan.uploadMore", "Upload {{count}} more image(s)", {
-            count: MIN_SCAN_IMAGES - uploadedCount,
-          })
-        ) : !checklistCompleted ? (
-          t("uploadScan.completeChecklist")
-        ) : !hasSideImage ? (
-          t("uploadScan.sideRequired", "Side view image is required")
-        ) : (
-          t("uploadScan.uploadAndScan")
-        )}
-      </button>
-      </div>
       </div>
 
       {previewImage && (
@@ -1039,49 +1039,49 @@ function MultiImageUpload({ images, uploadedCount, onChange, onDrop, onRemove, o
 
       {selectedImages.length > 0 && (
         <>
-        <div style={styles.previewGrid}>
-          {selectedImages.map(({ key, labelKey, image }) => {
-            const previewUrl = URL.createObjectURL(image);
-            return (
-              <div key={key} style={styles.previewTile}>
-                <img
-                  src={previewUrl}
-                  alt={t(labelKey)}
-                  style={styles.preview}
-                  onClick={() => {
-                    if (onPreview) onPreview(previewUrl);
-                  }}
-                />
-                <div style={styles.previewLabel}>{t(labelKey)}</div>
-                <button
-                  type="button"
-                  style={styles.removeBtn}
-                  onClick={() => onRemove(key)}
-                >
-                  x
-                </button>
-              </div>
-            );
-          })}
-        </div>
-        <label style={styles.changeImagesBtn}>
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            style={{ display: "none" }}
-            onChange={onChange}
-          />
-          {t("uploadScan.changeImages", "Add more images")}
-        </label>
-        <div style={styles.dropReplaceHint}>
-          {t(
-            "uploadScan.dropAddHint",
-            uploadedCount >= MAX_SCAN_IMAGES
-              ? "Maximum 5 images added. Remove one to add another."
-              : "Add images one by one or several together until you reach 5.",
-          )}
-        </div>
+          <div style={styles.previewGrid}>
+            {selectedImages.map(({ key, labelKey, image }) => {
+              const previewUrl = URL.createObjectURL(image);
+              return (
+                <div key={key} style={styles.previewTile}>
+                  <img
+                    src={previewUrl}
+                    alt={t(labelKey)}
+                    style={styles.preview}
+                    onClick={() => {
+                      if (onPreview) onPreview(previewUrl);
+                    }}
+                  />
+                  <div style={styles.previewLabel}>{t(labelKey)}</div>
+                  <button
+                    type="button"
+                    style={styles.removeBtn}
+                    onClick={() => onRemove(key)}
+                  >
+                    x
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+          <label style={styles.changeImagesBtn}>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              style={{ display: "none" }}
+              onChange={onChange}
+            />
+            {t("uploadScan.changeImages", "Add more images")}
+          </label>
+          <div style={styles.dropReplaceHint}>
+            {t(
+              "uploadScan.dropAddHint",
+              uploadedCount >= MAX_SCAN_IMAGES
+                ? "Maximum 5 images added. Remove one to add another."
+                : "Add images one by one or several together until you reach 5.",
+            )}
+          </div>
         </>
       )}
     </div>

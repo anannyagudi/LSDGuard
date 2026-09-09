@@ -5,7 +5,7 @@ import "./OutbreakPage.css";
 
 const API_BASE =
   (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE) ||
-  "http://localhost:5000";
+  "http://https://lsdguard-gx3u.onrender.com";
 
 const FALLBACK_LOCATION = { lat: 18.9894, lng: 73.1175 };
 const TILE_SIZE = 256;

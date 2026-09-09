@@ -17,7 +17,7 @@ import "./addcow.css";
 
 const API_BASE =
   (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE) ||
-  "http://localhost:5000";
+  "http://https://lsdguard-gx3u.onrender.com";
 
 const photoTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 const reportTypes = ["image/jpeg", "image/jpg", "image/png", "application/pdf"];

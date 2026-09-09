@@ -14,7 +14,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 
 const API_BASE =
   (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE) ||
-  "http://localhost:5000";
+  "http://https://lsdguard-gx3u.onrender.com";
 const RECAPTCHA_SITE_KEY =
   (typeof import.meta !== "undefined" && import.meta.env?.VITE_RECAPTCHA_SITE_KEY) ||
   "";

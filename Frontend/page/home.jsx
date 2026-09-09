@@ -70,11 +70,11 @@ const getUpcomingVaccinationReminders = (cows = []) => {
       const legacyReminder =
         cow.pendingVaccinationDate && Number(cow.vaccinationsPending || 0) > 0
           ? [{
-              cowName: cow.cowName,
-              date: cow.pendingVaccinationDate,
-              time: "",
-              doctor: cow.pendingVaccinationDoctor || "",
-            }]
+            cowName: cow.cowName,
+            date: cow.pendingVaccinationDate,
+            time: "",
+            doctor: cow.pendingVaccinationDoctor || "",
+          }]
           : [];
 
       return [...slotReminders, ...legacyReminder];
@@ -115,7 +115,7 @@ const actions = [
 
 const API_BASE =
   (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE) ||
-  "http://localhost:5000";
+  "http://https://lsdguard-gx3u.onrender.com";
 
 const clampScore = (value) => Math.max(0, Math.min(100, Math.round(value)));
 

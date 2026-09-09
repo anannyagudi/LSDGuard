@@ -1,6 +1,6 @@
 const API_BASE =
   (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE) ||
-  "http://localhost:5000";
+  "http://https://lsdguard-gx3u.onrender.com";
 
 async function requestJson(path) {
   const response = await fetch(`${API_BASE}/api${path}`);
