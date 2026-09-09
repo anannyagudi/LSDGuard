@@ -53,3 +53,17 @@ dataset/
 *.njsproj
 *.sln
 *.sw?
+
+# Large ML model files
+*.pt
+*.pth
+
+# Dataset
+dataset/
+dataset.zip
+
+# Environment variables
+.env
+.env.*
+!.env.example
+Backend/.env
