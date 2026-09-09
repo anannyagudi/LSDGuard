@@ -477,7 +477,7 @@ function AuthPage({ mode }) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [locationStatus, setLocationStatus] = useState("");
   const [passwordTouched, setPasswordTouched] = useState(false);
-  const [captchaToken, setCaptchaToken] = useState("");
+  // const [captchaToken, setCaptchaToken] = useState("");
   const [message, setMessage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [resetStep, setResetStep] = useState(1);
@@ -576,10 +576,10 @@ function AuthPage({ mode }) {
     return undefined;
   }, [isSignup]);
 
-  const resetCaptcha = () => {
-    recaptchaRef.current?.reset();
-    setCaptchaToken("");
-  };
+  // const resetCaptcha = () => {
+  //   recaptchaRef.current?.reset();
+  //   setCaptchaToken("");
+  // };
 
   const showMessage = (type, textValue) => {
     setMessage({ type, text: textValue });
@@ -606,8 +606,13 @@ function AuthPage({ mode }) {
     isSignupPasswordValid &&
     confirmPassword &&
     password === confirmPassword;
-  const isLoginFormReady = isEmailValid && password && Boolean(captchaToken);
-  const canSubmit = isForgot ? isForgotFormReady : (isSignup ? isSignupFormReady : isLoginFormReady);
+  // const isLoginFormReady = isEmailValid && password && Boolean(captchaToken);
+  // const canSubmit = isForgot ? isForgotFormReady : (isSignup ? isSignupFormReady : isLoginFormReady);
+  const isLoginFormReady = isEmailValid && password;
+
+  const canSubmit = isForgot
+    ? isForgotFormReady
+    : (isSignup ? isSignupFormReady : isLoginFormReady);
 
   const requestPasswordResetCode = async () => {
     if (!isEmailValid) {
@@ -765,10 +770,6 @@ function AuthPage({ mode }) {
       return;
     }
 
-    if (!isSignup && !captchaToken) {
-      showMessage("error", "Please complete the reCAPTCHA verification.");
-      return;
-    }
 
     setLoading(true);
 
@@ -785,7 +786,7 @@ function AuthPage({ mode }) {
           role: "Farmer",
           password,
         }
-        : { email: cleanEmail, password, recaptchaToken: captchaToken };
+        : { email: cleanEmail, password };
 
       const response = await fetch(`${API_BASE}${endpoint}`, {
         method: "POST",
@@ -1071,7 +1072,7 @@ function AuthPage({ mode }) {
               </>
             )}
 
-            {!isSignup && !isForgot && (
+            {/* {!isSignup && !isForgot && (
               <div className="auth-recaptcha">
                 {RECAPTCHA_SITE_KEY ? (
                   <ReCAPTCHA
@@ -1087,7 +1088,7 @@ function AuthPage({ mode }) {
                   </p>
                 )}
               </div>
-            )}
+            )} */}
 
             <button className="signin-btn" onClick={handleSubmit} disabled={loading || !canSubmit}>
               {loading
