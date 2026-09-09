@@ -11,7 +11,7 @@ import {
 } from "react-router-dom";
 
 import { useEffect, useRef, useState } from "react";
-import ReCAPTCHA from "react-google-recaptcha";
+// import ReCAPTCHA from "react-google-recaptcha";
 import {
   Activity,
   ArrowRight,
@@ -776,15 +776,15 @@ function AuthPage({ mode }) {
       const endpoint = isSignup ? "/api/auth/signup" : "/api/auth/login";
       const payload = isSignup
         ? {
-            name: name.trim(),
-            mobile: mobile.trim(),
-            email: cleanEmail,
-            location: location.trim(),
-            lat: coords.lat,
-            lng: coords.lng,
-            role: "Farmer",
-            password,
-          }
+          name: name.trim(),
+          mobile: mobile.trim(),
+          email: cleanEmail,
+          location: location.trim(),
+          lat: coords.lat,
+          lng: coords.lng,
+          role: "Farmer",
+          password,
+        }
         : { email: cleanEmail, password, recaptchaToken: captchaToken };
 
       const response = await fetch(`${API_BASE}${endpoint}`, {
@@ -860,7 +860,7 @@ function AuthPage({ mode }) {
                 ? "Create your farmer profile, keep cattle records organized, and make every scan easier to follow."
                 : isForgot
                   ? "Verify your account by email, set a new password, and return to your farm dashboard securely."
-                : "Open your dashboard, review scans, and keep daily farm health tasks moving."}
+                  : "Open your dashboard, review scans, and keep daily farm health tasks moving."}
             </p>
           </div>
 
@@ -991,7 +991,7 @@ function AuthPage({ mode }) {
               </>
             ) : (
               <>
-                {isSignup && (
+                {/* {isSignup && (
                   <>
                     <div className="field-label">Full Name</div>
                     <input
@@ -1008,7 +1008,7 @@ function AuthPage({ mode }) {
                       inputMode="numeric"
                     />
                   </>
-                )}
+                )} */}
 
                 <div className="field-label">Email Address</div>
                 <input value={email} onChange={(event) => setEmail(event.target.value)} placeholder="farmer@example.com" />
@@ -1354,42 +1354,42 @@ function ScanResultPage() {
             </div>
 
             <section style={carePlanStyle}>
-                <div style={carePlanHeaderStyle}>
-                  <div>
-                    <div style={carePlanEyebrowStyle}>
-                      {aiSource ? `${aiSource}${aiModel ? ` - ${aiModel}` : ""}` : "LSDGuard care guide"}
-                    </div>
-                    <h2 style={carePlanTitleStyle}>Remedies and Care Steps</h2>
+              <div style={carePlanHeaderStyle}>
+                <div>
+                  <div style={carePlanEyebrowStyle}>
+                    {aiSource ? `${aiSource}${aiModel ? ` - ${aiModel}` : ""}` : "LSDGuard care guide"}
                   </div>
+                  <h2 style={carePlanTitleStyle}>Remedies and Care Steps</h2>
                 </div>
+              </div>
 
-                {aiAdvice && (
-                  <div style={adviceBoxStyle}>
-                    {aiAdvice.split(/\n{2,}/).map((paragraph, index) => (
-                      <p key={index} style={adviceParagraphStyle}>
-                        {paragraph}
-                      </p>
-                    ))}
-                  </div>
-                )}
+              {aiAdvice && (
+                <div style={adviceBoxStyle}>
+                  {aiAdvice.split(/\n{2,}/).map((paragraph, index) => (
+                    <p key={index} style={adviceParagraphStyle}>
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+              )}
 
-                {displayRemedies.length > 0 && (
-                  <div style={remedyListStyle}>
-                    {displayRemedies.map((item, index) => (
-                      <article key={`${item.title || "remedy"}-${index}`} style={remedyCardStyle}>
-                        <div style={remedyNumberStyle}>{index + 1}</div>
-                        <div>
-                          <h3 style={remedyTitleStyle}>{item.title}</h3>
-                          <p style={remedyPurposeStyle}>{item.purpose}</p>
-                          <p style={remedyStepsStyle}>{item.steps}</p>
-                          {item.evidence && (
-                            <p style={remedyEvidenceStyle}>{item.evidence}</p>
-                          )}
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-                )}
+              {displayRemedies.length > 0 && (
+                <div style={remedyListStyle}>
+                  {displayRemedies.map((item, index) => (
+                    <article key={`${item.title || "remedy"}-${index}`} style={remedyCardStyle}>
+                      <div style={remedyNumberStyle}>{index + 1}</div>
+                      <div>
+                        <h3 style={remedyTitleStyle}>{item.title}</h3>
+                        <p style={remedyPurposeStyle}>{item.purpose}</p>
+                        <p style={remedyStepsStyle}>{item.steps}</p>
+                        {item.evidence && (
+                          <p style={remedyEvidenceStyle}>{item.evidence}</p>
+                        )}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              )}
             </section>
 
             <section style={vetRecommendationStyle}>
